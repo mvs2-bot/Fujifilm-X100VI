@@ -1,1 +1,391 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="description" content="Interaktive Karte aller Bedienelemente der Fujifilm X100VI mit Funktion, Werkseinstellung und Praxistipps.">
+<meta name="theme-color" content="#0f1210">
+<link rel="icon" href="icon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="icon.svg">
+<title>X100VI Kamerakarte</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600;700&family=IBM+Plex+Sans:wght@400;500;600&display=swap">
+<style>
+/* Layout: Terminal-Fenster. Links die Kamera-Ansicht als SVG mit nummerierten Hotspots, rechts das Detail-Panel. Mobil gestapelt. */
+:root{
+  --bg:#0f1210; --panel:#151a17; --line:#2a332d; --body:#1b211d; --metal:#3a443d;
+  --fg:#d8e2da; --dim:#8a9a8f; --amber:#f2b544; --cyan:#6fd3c8; --red:#e56b5b;
+  --mono:"JetBrains Mono",ui-monospace,"SFMono-Regular",Menlo,Consolas,monospace;
+  --sans:"IBM Plex Sans",system-ui,-apple-system,"Segoe UI",sans-serif;
+  color-scheme:dark;
+}
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--fg);font-family:var(--sans);font-size:15px;line-height:1.5;
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:20px 40px}
+.wrap{max-width:1180px;margin:0 auto;display:flex;flex-direction:column;gap:16px}
+.term{border:1px solid var(--line);background:var(--panel);border-radius:8px;overflow:hidden}
+.bar{display:flex;align-items:center;gap:8px;padding:8px 12px;border-bottom:1px solid var(--line);font-family:var(--mono);font-size:12px;color:var(--dim)}
+.dot{width:10px;height:10px;border-radius:50%;background:var(--line)}
+.dot.r{background:var(--red)}.dot.a{background:var(--amber)}.dot.c{background:var(--cyan)}
+.bar span.path{margin-left:8px;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+header .inner{padding:16px 18px;display:flex;flex-direction:column;gap:6px}
+h1{font-family:var(--mono);font-size:clamp(20px,3.2vw,28px);margin:0;font-weight:700;letter-spacing:.02em;text-wrap:balance}
+h1 .p{color:var(--amber)}
+.sub{color:var(--dim);font-size:14px;margin:0;max-width:72ch}
+.sub a{color:var(--cyan)}
+.cursor{display:inline-block;width:.6em;height:1em;background:var(--amber);vertical-align:-2px;animation:blink 1.1s steps(1) infinite}
+@keyframes blink{50%{opacity:0}}
+@media (prefers-reduced-motion:reduce){.cursor{animation:none}}
+.controls{display:flex;flex-wrap:wrap;gap:8px;align-items:center;justify-content:space-between;padding:10px 12px;border-bottom:1px solid var(--line)}
+.tabs,.toggles{display:flex;flex-wrap:wrap;gap:6px}
+button{font:inherit;cursor:pointer}
+.tab{font-family:var(--mono);font-size:13px;background:transparent;color:var(--dim);border:1px solid var(--line);border-radius:4px;padding:6px 12px}
+.tab[aria-selected="true"]{color:var(--bg);background:var(--amber);border-color:var(--amber);font-weight:600}
+.tab:hover{color:var(--fg)}
+.tog{font-family:var(--mono);font-size:12px;background:transparent;color:var(--cyan);border:1px dashed var(--cyan);border-radius:4px;padding:6px 10px}
+.tog[aria-pressed="false"]{color:var(--dim);border-color:var(--line)}
+:focus-visible{outline:2px solid var(--cyan);outline-offset:2px}
+.main{display:grid;grid-template-columns:minmax(0,1.45fr) minmax(0,1fr)}
+@media (max-width:860px){.main{grid-template-columns:minmax(0,1fr)}}
+.stage{padding:12px;border-right:1px solid var(--line);min-width:0;display:flex;flex-direction:column;gap:10px}
+@media (max-width:860px){.stage{border-right:0;border-bottom:1px solid var(--line)}}
+.view-label{font-family:var(--mono);font-size:12px;color:var(--dim)}
+.view-label b{color:var(--fg);font-weight:600}
+svg.cam{width:100%;height:auto;display:block;max-width:100%;border-radius:4px}
+svg .b{fill:var(--body);stroke:var(--metal);stroke-width:2}
+svg .m{fill:var(--metal);stroke:#56635a;stroke-width:1.5}
+svg .g{fill:#0b0f0d;stroke:var(--metal);stroke-width:1.5}
+svg .ln{fill:none;stroke:var(--metal);stroke-width:1.5}
+svg .tk{fill:none;stroke:#56635a;stroke-width:1}
+svg .t{fill:var(--dim);font-family:var(--mono);font-size:10px}
+svg .tb{fill:var(--fg);font-family:var(--mono);font-size:11px}
+.hs{cursor:pointer}
+.hs circle{fill:rgba(15,18,16,.85);stroke:var(--amber);stroke-width:6}
+.hs text{fill:var(--amber);font-family:var(--mono);font-size:32px;font-weight:700;text-anchor:middle;dominant-baseline:central;pointer-events:none}
+.hs:hover circle,.hs:focus-visible circle{fill:var(--amber)}
+.hs:hover text,.hs:focus-visible text{fill:var(--bg)}
+.hs.on circle{fill:var(--amber)} .hs.on text{fill:var(--bg)}
+.hs:focus{outline:none}
+.acc rect{fill:rgba(15,18,16,.85);stroke:var(--cyan);stroke-width:6}
+.acc text{fill:var(--cyan)}
+.acc:hover rect,.acc:focus-visible rect,.acc.on rect{fill:var(--cyan)}
+.acc:hover text,.acc:focus-visible text,.acc.on text{fill:var(--bg)}
+.hide-acc .acc{display:none}
+.legend{display:flex;flex-wrap:wrap;gap:4px 14px;font-family:var(--mono);font-size:12px;color:var(--dim)}
+.legend i{font-style:normal;color:var(--amber)} .legend i.c{color:var(--cyan)}
+.detail{padding:16px 18px;min-width:0;display:flex;flex-direction:column;gap:12px}
+.prompt{font-family:var(--mono);font-size:12px;color:var(--dim)}
+.prompt b{color:var(--cyan);font-weight:400}
+.detail h2{margin:0;font-family:var(--mono);font-size:19px;color:var(--amber);text-wrap:balance}
+.detail h2.c{color:var(--cyan)}
+.kv{display:grid;grid-template-columns:minmax(0,1fr);gap:10px;margin:0}
+.kv div{border-left:2px solid var(--line);padding-left:10px}
+.kv dt{font-family:var(--mono);font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--dim);margin-bottom:2px}
+.kv dd{margin:0}
+.kv div.tip{border-left-color:var(--amber)}
+.kv div.tip dt{color:var(--amber)}
+.src{font-family:var(--mono);font-size:11px;color:var(--dim)}
+.src a{color:var(--cyan)}
+.list{padding:0 12px 12px}
+.tbl-wrap{overflow-x:auto}
+table{width:100%;border-collapse:collapse;font-size:13px}
+th,td{text-align:left;padding:6px 8px;border-bottom:1px solid var(--line);vertical-align:top}
+th{font-family:var(--mono);font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--dim);font-weight:400}
+td.n{font-family:var(--mono);color:var(--amber);width:2.5em;font-variant-numeric:tabular-nums}
+td.n.c{color:var(--cyan)}
+tr.row{cursor:pointer} tr.row:hover td{background:#1c231f} tr.row.on td{background:#222b25}
+.sec-h{font-family:var(--mono);font-size:12px;color:var(--dim);padding:12px 12px 6px}
+.refs{padding:14px 18px;display:flex;flex-direction:column;gap:6px;font-size:13px;color:var(--dim)}
+.refs a{color:var(--cyan)}
+.refs ul{margin:0;padding-left:18px}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header class="term">
+    <div class="bar"><span class="dot r"></span><span class="dot a"></span><span class="dot c"></span><span class="path">~/x100vi/kamerakarte — zsh</span></div>
+    <div class="inner">
+      <h1><span class="p">$</span> x100vi --karte <span class="cursor" aria-hidden="true"></span></h1>
+      <p class="sub">Fujifilm X100VI (schwarz), FUJINON 23 mm F2 (KB-äquivalent 35 mm). Elemente anklicken für Funktion, Werkseinstellung, Anpassung und Praxistipp. Fotos: eigene Aufnahmen. Bezeichnungen und Standardbelegungen stammen aus dem <a href="https://fujifilm-dsc.com/en/manual/x100vi/about_this_camera/parts/" target="_blank" rel="noopener">offiziellen Handbuch (Parts of the Camera)</a>.</p>
+    </div>
+  </header>
 
+  <section class="term" id="app">
+    <div class="controls">
+      <div class="tabs" role="tablist" aria-label="Ansicht">
+        <button class="tab" role="tab" data-view="oben" id="tab-oben">oben</button>
+        <button class="tab" role="tab" data-view="vorne" id="tab-vorne">vorne</button>
+        <button class="tab" role="tab" data-view="hinten" id="tab-hinten">hinten</button>
+        <button class="tab" role="tab" data-view="seite" id="tab-seite">seite</button>
+        <button class="tab" role="tab" data-view="unten" id="tab-unten">unten</button>
+      </div>
+      <div class="toggles">
+        <button class="tog" id="tog-acc" aria-pressed="true">[◆] mein Zubehör</button>
+      </div>
+    </div>
+    <div class="main">
+      <div class="stage" id="stage">
+        <div class="view-label" id="vlabel"></div>
+        <div id="svgs"></div>
+        <div class="legend"><span><i>●</i> Bedienelement</span><span><i class="c">◆</i> dein Zubehör</span><span>Fotos: eigene Aufnahmen</span></div>
+      </div>
+      <aside class="detail" id="detail" aria-live="polite"></aside>
+    </div>
+    <div class="sec-h" id="listhead"></div>
+    <div class="list"><div class="tbl-wrap"><table><thead><tr><th>#</th><th>Element</th><th>Standard</th></tr></thead><tbody id="tbody"></tbody></table></div></div>
+  </section>
+
+  <section class="term">
+    <div class="bar"><span class="dot"></span><span class="dot"></span><span class="dot"></span><span class="path">cat quellen.txt</span></div>
+    <div class="refs">
+      <span>Die Fotos zeigen meine eigene X100VI mit Zubehör. Offizielle Teile-Abbildungen von Fujifilm findest du hier:</span>
+      <ul>
+        <li><a href="https://fujifilm-dsc.com/en/manual/x100vi/about_this_camera/parts/" target="_blank" rel="noopener">Handbuch: Parts of the Camera</a> (Abbildung mit allen Teilen A bis u)</li>
+        <li><a href="https://fujifilm-dsc.com/en/manual/x100vi/shortcuts/function_buttons/" target="_blank" rel="noopener">Handbuch: Function Buttons</a> (Standardbelegungen)</li>
+        <li><a href="https://fujifilm-dsc.com/en/manual/x100vi/technical_notes/spec/" target="_blank" rel="noopener">Handbuch: Technische Daten</a></li>
+        <li><a href="https://fujifilm-dsc.com/en/manual/x100vi/x100vi_manual_en_s_f.pdf" target="_blank" rel="noopener">Handbuch als PDF</a></li>
+      </ul>
+      <span>Stand: November 2026. Angaben ohne Handbuch-Beleg sind im Text als solche markiert.</span>
+    </div>
+  </section>
+</div>
+
+<script>
+const V = {
+  oben:{img:"img/oben.jpg",label:"Draufsicht · Objektiv zeigt nach unten",
+    acc:[["grip",560,540],["uv",1300,1075],["cuff",130,700],["leash",1820,640]]},
+  vorne:{img:"img/vorne.jpg",label:"Vorderansicht · in der LC-X100V-Tasche, Frontring statt Filter",
+    acc:[["tasche",520,880],["cuff",95,520],["leash",1900,520]]},
+  hinten:{img:"img/hinten.jpg",label:"Rückansicht · Foto gedreht, Oberseite oben",
+    acc:[["grip",1060,330],["folie",640,960],["tasche",1560,1170]]},
+  seite:{img:"img/seite.jpg",label:"Seitenansicht · Fokusmodus-Schalter, Objektiv zeigt nach unten",
+    acc:[["uv",1430,1095],["leash",560,140],["tasche",1400,600]]},
+  unten:{img:"img/unten.jpg",label:"Unterseite · Taschenklappe geöffnet",
+    acc:[["tasche",580,640],["akku",1500,900],["uv",1150,1170],["cuff",1900,820]]}
+};
+const C = [
+ // OBEN
+ {v:"oben",x:745,y:735,n:"Verschlusszeit-/ISO-Rad",k:"E",
+  f:"Außen: Verschlusszeit (B, T, 1 s bis 1/4000 s, A). Ring anheben und drehen: Empfindlichkeit (ISO) im Sichtfenster.",
+  d:"Zeitenrad auf A = Zeitautomatik; ISO-Fenster auf A = Auto-ISO. Mechanisch 30 s bis 1/4000 s, elektronisch bis 1/180000 s. ISO 125 bis 12800, erweiterte Werte darüber und darunter.",
+  c:"Auto-ISO-Profile (Basis, Max., Mindestzeit) im Menü Aufnahmeeinstellungen. Auf deinem Rad ist zusätzlich die Stellung C zu sehen: Dann wird die ISO per Einstellrad gewählt.",
+  t:"Für Street: Zeit 1/250, Blende f/5.6 bis f/8, ISO auf A. Der ISO-Ring rastet bewusst schwergängig, beim Wechsel kurz hinschauen."},
+ {v:"oben",x:435,y:700,n:"Belichtungskorrekturrad",k:"B",
+  f:"Belichtungskorrektur direkt am Rad, −3 bis +3 EV in Drittelstufen.",
+  d:"0. In Stellung C übernimmt das vordere Einstellrad, dann sind −5 bis +5 EV möglich (Video ±2 EV).",
+  c:"Das Rad selbst ist nicht umbelegbar; Stellung C macht das vordere Rad zum Korrekturrad.",
+  t:"Das Rad sitzt an der Ecke und verdreht sich in der Tasche leicht. Vor dem ersten Bild kurz auf 0 prüfen."},
+ {v:"oben",x:555,y:810,n:"Auslöser + EIN/AUS",k:"C/D",
+  f:"Halb drücken: Fokus und Belichtung speichern. Durchdrücken: auslösen. Der Ring um den Auslöser schaltet ein und aus.",
+  d:"Mit Gewinde für Soft-Release oder Drahtauslöser (bei dir der rote Soft-Release-Button).",
+  c:"Fokus vom Auslöser trennen (Rückfokus) über AF/MF-Einstellungen und Belegung der AEL/AFL-Taste.",
+  t:"Der Soft-Release macht den Druckpunkt fühlbarer und hilft bei langen Zeiten gegen Verwackeln."},
+ {v:"oben",x:420,y:825,n:"Fn1-Taste",k:"A",
+  f:"Frei belegbare Funktionstaste neben dem Auslöser.",
+  d:"GESICHTSERKENNUNG EIN/AUS (laut Handbuch).",
+  c:"TASTEN/RAD-EINSTELLUNG › FUNKTIONSTASTEN (Fn). Bei Fujifilm öffnet langes Drücken von DISP/BACK die Belegung direkt.",
+  t:"Gut für eine Funktion, die du mit dem Zeigefinger blind treffen willst, etwa Filmsimulation oder Auto-ISO-Profil."},
+ {v:"oben",x:985,y:705,n:"Blitzschuh",k:"G",
+  f:"Standard-Blitzschuh für Aufsteckblitz, Aufstecksucher oder Mikrofon.",
+  d:"Werkseitig mit Blitzschuhabdeckung.",
+  c:"Blitzeinstellungen im Menü Blitz.",
+  t:"Hier steckt die Abdeckung deines SmallRig-Daumengriffs. Für einen Aufsteckblitz musst du den Griff abnehmen."},
+ {v:"oben",x:1100,y:925,n:"Blendenring",k:"M",
+  f:"Blende einstellen: F2, 2.8, 4, 5.6, 8, 11, 16 und A.",
+  d:"A = Blende automatisch (mit Zeit auf A: Programmautomatik).",
+  c:"Drittelstufen-Rasten, keine Umbelegung.",
+  t:"Blende manuell und Zeit auf A ist die klassische Zeitautomatik für Street."},
+ {v:"oben",x:1040,y:1010,n:"Steuer-/Fokusring",k:"N",
+  f:"Bei Fokusschalter auf M: Fokussieren. Sonst Schnellzugriff auf eine Funktion.",
+  d:"STANDARD: in P/S/A/M digitaler Telekonverter.",
+  c:"Auf WEISSABGLEICH, FILMSIMULATION oder DIG. TELEKONV. stellen (Fn2 oder TASTEN/RAD-EINSTELLUNG › STEUERRING-EINSTELLUNG).",
+  t:"Steuerring auf FILMSIMULATION ist die schnellste Art, Looks zu wechseln."},
+ {v:"oben",x:1345,y:560,n:"Sucher-Okular",k:"V/W",
+  f:"Okular des Hybridsuchers mit Augenmuschel.",
+  d:"Augensensor schaltet automatisch zwischen Sucher und Display.",
+  c:"VIEW MODE im Menü.",
+  t:"Details in der Rückansicht."},
+ // VORNE
+ {v:"vorne",x:815,y:515,n:"Sucherwahlhebel mit Fn2",k:"R/Q",
+  f:"Hebel ziehen: zwischen optischem (OVF) und elektronischem Sucher (EVF) wechseln. Im OVF in die andere Richtung: elektronischer Entfernungsmesser (ERF) ein/aus. In der Mitte: Fn2-Taste.",
+  d:"Fn2 = STEUERRING-EINSTELLUNG. Hebel als Funktion = ND-FILTER (laut Handbuch). ERF nur mit Fokusfeld EINZELPUNKT; bei Video schaltet die Kamera auf EVF.",
+  c:"Fn2 und Hebelfunktion unter TASTEN/RAD-EINSTELLUNG › FUNKTIONSTASTEN (Fn) umbelegbar.",
+  t:"Der eingebaute ND-Filter (4 Stufen) erlaubt Offenblende bei Sonne. OVF für Street mit Rahmen-Vorausschau, EVF wenn Belichtung und Filmsimulation stimmen müssen."},
+ {v:"vorne",x:605,y:470,n:"Vorderes Einstellrad",k:"S",
+  f:"Drehen: je nach Modus Zeit oder Blende fein, Belichtungskorrektur (Rad auf C) oder Menüauswahl. Drücken: wählt, was das Drehen steuert.",
+  d:"Funktion hängt vom Belichtungsmodus ab; per Druck umschaltbar.",
+  c:"TASTEN/RAD-EINSTELLUNG › EINSTELLRAD-EINSTELLUNG.",
+  t:"Korrekturrad auf C und hier regeln: geht mit dem Zeigefinger, ohne umzugreifen."},
+ {v:"vorne",x:920,y:462,n:"AF-Hilfslicht / Selbstauslöser",k:"F",
+  f:"Leuchtet bei wenig Licht als Fokushilfe und blinkt beim Selbstauslöser.",
+  d:"AF-Hilfslicht ein.",
+  c:"AF/MF-EINSTELLUNG › AF-HILFSLICHT aus.",
+  t:"Für unauffällige Street-Fotografie abschalten, zusammen mit dem lautlosen elektronischen Verschluss."},
+ {v:"vorne",x:1065,y:445,n:"Eingebauter Blitz",k:"I",
+  f:"Kleiner Blitz für Aufhellung.",
+  d:"Blitzmodus im Menü Blitz.",
+  c:"TTL, manuell, Synchronisation 1. oder 2. Vorhang.",
+  t:"Mit Zentralverschluss sind kurze Blitzsynchronzeiten möglich, ideal zum Aufhellen bei Gegenlicht."},
+ {v:"vorne",x:1395,y:480,n:"Hybrid-Sucherfenster",k:"J",
+  f:"Fenster des optischen Suchers.",
+  d:"EVF: 0,5″ OLED mit 3,69 Mio. Punkten.",
+  c:"Helligkeit und Farbe in den Bildschirm-Einstellungen.",
+  t:"Im OVF verdeckt das Objektiv unten rechts einen Teil des Bildes. Bei nahen Motiven den EVF nutzen (Parallaxe)."},
+ {v:"vorne",x:1110,y:900,n:"Objektiv + Frontring",k:"O/P",
+  f:"FUJINON 23 mm F2 (KB 35 mm). Der Frontring vorn ist abnehmbar, dort sitzt sonst dein UV-Filter.",
+  d:"Auf diesem Foto mit Frontring statt Filter.",
+  c:"Filter oder Adapter statt Frontring.",
+  t:"Frontring gut aufbewahren, wenn der Filter drauf ist."},
+ // HINTEN
+ {v:"hinten",x:1170,y:500,n:"AEL/AFL-Taste",k:"Z",
+  f:"Belichtung und/oder Fokus speichern. Lässt sich als Rückfokus-Taste (AF-ON) nutzen.",
+  d:"AE/AF-SPEICHER (laut Handbuch). Eine eigene AF-ON-Taste hat die X100VI nicht.",
+  c:"Als AF-ON belegen und Fokus vom Auslöser trennen.",
+  t:"Rückfokus mit Fokusschalter auf C: Daumen drücken führt den AF nach, loslassen fixiert. Liegt direkt am Daumengriff."},
+ {v:"hinten",x:1000,y:500,n:"DRIVE/DELETE",k:"Y",
+  f:"Bei Aufnahme: Drive-Menü (Serie, Belichtungsreihe, Panorama, HDR, Mehrfachbelichtung). Bei Wiedergabe: löschen.",
+  d:"Drive-Menü.",
+  c:"Optionen im Menü.",
+  t:"Hier liegt auch die Mehrfachbelichtung, beliebt bei Fujifilm-Rezepten."},
+ {v:"hinten",x:1365,y:500,n:"Hinteres Einstellrad",k:"a",
+  f:"Drehen: Zeit/Blende fein, Menüs, Zoom in der Wiedergabe. Drücken: Funktion der Radtaste; lang drücken: MF-Anzeige.",
+  d:"Druck = FOKUSKONTROLLE (laut Handbuch).",
+  c:"Druckfunktion unter FUNKTIONSTASTEN umbelegbar.",
+  t:"Bei MF: Rad drücken vergrößert den Fokuspunkt, zusammen mit Fokus-Peaking sehr präzise."},
+ {v:"hinten",x:1550,y:605,n:"Q-Taste (Schnellmenü)",k:"c",
+  f:"Öffnet das Q-Menü mit 16 frei wählbaren Einstellungen.",
+  d:"SCHNELLMENÜ.",
+  c:"Inhalt per langem Druck auf Q bearbeiten; die Custom-Sets C1 bis C7 sind ebenfalls hier erreichbar.",
+  t:"Sitzt auf der Daumenauflage und wird gern versehentlich gedrückt. Bei Bedarf anders belegen."},
+ {v:"hinten",x:1520,y:505,n:"Kontrollleuchte",k:"b",
+  f:"Zeigt Status wie Schreiben auf Karte oder Laden.",
+  d:"—",
+  c:"—",
+  t:"Nicht abschalten, bevor die Leuchte aus ist, wenn noch geschrieben wird."},
+ {v:"hinten",x:1295,y:650,n:"Fokushebel (Joystick)",k:"k",
+  f:"Fokuspunkt verschieben; drücken setzt ihn zurück. Navigiert auch in Menüs.",
+  d:"Fokusmessfeld wählen.",
+  c:"TASTEN/RAD-EINSTELLUNG › FOKUSHEBEL-EINSTELLUNG.",
+  t:"Schneller ist das Display als Touchpad, wenn du durch den Sucher schaust."},
+ {v:"hinten",x:1295,y:770,n:"MENU/OK",k:"j",
+  f:"Hauptmenü öffnen, Auswahl bestätigen.",
+  d:"Fest belegt.",
+  c:"MEIN MENÜ für die meistgenutzten Punkte einrichten.",
+  t:"Mein Menü mit Formatieren, Auto-ISO und Bildqualität spart viel Scrollen."},
+ {v:"hinten",x:1295,y:870,n:"PLAY (Wiedergabe)",k:"h",
+  f:"Aufnahmen ansehen.",
+  d:"Fest belegt.",
+  c:"Wiedergabe-Menü.",
+  t:"Auslöser halb drücken bringt dich sofort zurück zur Aufnahme."},
+ {v:"hinten",x:1295,y:965,n:"DISP/BACK + Bluetooth",k:"i",
+  f:"Anzeige umschalten; im Menü zurück. Gleiche Taste: Bluetooth-Funktion.",
+  d:"Fest belegt.",
+  c:"Anzeigen unter BILDSCHIRM-EINSTELLUNG › DISP. CUSTOM. EINST.",
+  t:"Für OVF und EVF getrennt einstellbar, was eingeblendet wird."},
+ {v:"hinten",x:850,y:820,n:"Neigbares Touch-Display",k:"n",
+  f:"3,0″ LCD mit 1,62 Mio. Punkten, nach oben und unten neigbar. Touch für Fokus, Auslösen und Wischgesten.",
+  d:"Touch aktiv.",
+  c:"BILDSCHIRM-EINST. › TOUCHSCREEN-EINSTELLUNG; Wischgesten frei belegbar.",
+  t:"Hüfthohe Perspektive mit geneigtem Display wirkt auf der Straße unauffällig."},
+ {v:"hinten",x:620,y:460,n:"Sucher-Okular + Augensensor",k:"W/X",
+  f:"Okular des Hybridsuchers; der Augensensor schaltet automatisch zwischen Sucher und Display.",
+  d:"Automatische Umschaltung.",
+  c:"VIEW MODE im Menü: nur Sucher, nur Display oder Augensensor.",
+  t:"Nur Sucher plus Bildkontrolle im Display spart Akku."},
+ {v:"hinten",x:490,y:480,n:"Dioptrienkorrektur",k:"V",
+  f:"Rad unter dem Okular, passt den Sucher an deine Sehstärke an.",
+  d:"—",
+  c:"—",
+  t:"Einstellen, während der EVF Text zeigt, bis die Schrift scharf ist."},
+ // SEITE
+ {v:"seite",x:1075,y:800,n:"Fokusmodus-Schalter",k:"L",
+  f:"Schiebeschalter für den Fokusmodus: M, C, S.",
+  d:"S = Einzel-AF, C = kontinuierlicher AF, M = manuell.",
+  c:"AF-Bereich und AF-C-Profile in den AF/MF-Einstellungen.",
+  t:"Zone-Fokus: Schalter auf M, Fokusring auf 2 bis 3 m, Blende f/8. Dann bist du sofort schussbereit. Die Tasche lässt den Schalter frei."},
+ {v:"seite",x:680,y:700,n:"Trageöse",k:"K",
+  f:"Öse für Gurt oder Handschlaufe, auf beiden Seiten.",
+  d:"—",
+  c:"Anchor-Systeme wie Peak Design passen.",
+  t:"Bei dir mit Peak-Design-Anchor bestückt."},
+ {v:"seite",x:1100,y:1010,n:"Steuer-/Fokusring",k:"N",
+  f:"Fokussieren bei M, sonst Schnellzugriff.",
+  d:"STANDARD: digitaler Telekonverter.",
+  c:"Siehe Draufsicht.",
+  t:"Bei M ist er dein Fokusring für Zone-Fokus."},
+ // UNTEN
+ {v:"unten",x:1315,y:780,n:"Akku- und Kartenfach",k:"f/g/s/t",
+  f:"Unten: Akku NP-W126S (7,2 V, 1260 mAh) und SD-Karte (UHS-I). Mit dem Schieber entriegeln.",
+  d:"Akku zusätzlich durch Akkuverriegelung gesichert.",
+  c:"Laden auch über USB-C in der Kamera.",
+  t:"Die Taschenklappe lässt sich öffnen, ohne die Tasche abzunehmen. UHS-I ist das Limit, teure UHS-II-Karten bringen hier nichts."}
+];
+const A = {
+ grip:{n:"SmallRig Daumengriff mit Blitzschuhabdeckung",w:"Blitzschuh; der Griff liegt hinten neben AEL/AFL",
+  f:"Steckt im Blitzschuh und gibt dem Daumen Halt, die Kamera liegt bei Einhandbedienung sicherer.",
+  t:"Belegt den Blitzschuh. AEL/AFL und DRIVE liegen direkt darunter, also leicht mit dem Daumen erreichbar."},
+ uv:{n:"SmallRig UV-Filter",w:"Vorn am Objektiv anstelle des Frontrings",
+  f:"Schützt die Frontlinse. Laut Fujifilm wird die X100VI erst mit Filter (z. B. AR-X100 + PRF-49) vollständig wetterfest; ob dein SmallRig-Filter diese Abdichtung ersetzt, ist nicht offiziell belegt.",
+  t:"Frontring gut aufbewahren. Bei Gegenlicht kann der Filter Reflexe erzeugen; dann kurz abschrauben."},
+ folie:{n:"K&F Concept Displayschutzfolie",w:"Auf dem Touch-LCD",
+  f:"Schützt das Display vor Kratzern.",
+  t:"Touch-Fokus nach dem Aufkleben einmal testen."},
+ akku:{n:"NP-W126S Zusatzakku",w:"Akkufach Unterseite",
+  f:"Zweiter Akku vom Typ NP-W126S.",
+  t:"Mit EVF braucht die Kamera spürbar mehr Strom als mit OVF. Ersatzakku einstecken; laden geht auch per USB-C."},
+ cuff:{n:"Peak Design Cuff (CF-BL-3)",w:"Trageöse",
+  f:"Handschlaufe am Anchor, hält die Kamera am Handgelenk.",
+  t:"Ideal für Street. Die Verschleißanzeige der Anchors (rot) regelmäßig prüfen."},
+ leash:{n:"Peak Design Leash (L-BL-3)",w:"Trageösen",
+  f:"Schlanker Gurt mit Anchors.",
+  t:"Anchors an beiden Ösen lassen: Leash ab, Cuff dran, in Sekunden."},
+ tasche:{n:"LC-X100V Tasche",w:"Umschließt den Body",
+  f:"Ledertasche von Fujifilm mit Klappe an der Unterseite.",
+  t:"Akku und Karte erreichst du über die Klappe unten, ohne die Tasche abzunehmen. Fokusschalter und Rückseiten-Tasten bleiben frei."}
+};
+const AK = {grip:"G",uv:"U",folie:"F",akku:"B",cuff:"C",leash:"L",tasche:"T"};
+
+let view="oben", sel=null, showAcc=true;
+try{ if(localStorage.getItem("x100vi-acc")==="0") showAcc=false }catch(e){}
+function esc(s){return s.replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/"/g,"&quot;")}
+function render(){
+  const v=V[view];
+  document.querySelectorAll(".tab").forEach(b=>b.setAttribute("aria-selected",b.dataset.view===view));
+  document.getElementById("vlabel").innerHTML=`<b>${view}</b> · ${v.label}`;
+  const items=C.filter(c=>c.v===view);
+  const hs=items.map((c,i)=>{const id=view+"-"+i;return `<g class="hs ${sel===id?"on":""}" tabindex="0" role="button" aria-label="${esc(c.n)}" data-id="${id}"><circle cx="${c.x}" cy="${c.y}" r="34"/><text x="${c.x}" y="${c.y}">${i+1}</text></g>`}).join("");
+  const ac=v.acc.map(([k,x,y])=>{const id="acc-"+k;return `<g class="hs acc ${sel===id?"on":""}" tabindex="0" role="button" aria-label="${esc(A[k].n)}" data-id="${id}"><rect x="${x-28}" y="${y-28}" width="56" height="56" transform="rotate(45 ${x} ${y})"/><text x="${x}" y="${y}">${AK[k]}</text></g>`}).join("");
+  document.getElementById("svgs").innerHTML=`<svg class="cam ${showAcc?"":"hide-acc"}" viewBox="0 0 2000 1500" role="img" aria-label="Foto X100VI ${view}"><image href="${v.img}" x="0" y="0" width="2000" height="1500"/>${hs}${ac}</svg>`;
+  document.getElementById("listhead").textContent=`$ ls ./${view}  (${items.length} Elemente${showAcc?", "+v.acc.length+" Zubehör":""})`;
+  let rows=items.map((c,i)=>`<tr class="row ${sel===view+"-"+i?"on":""}" data-id="${view}-${i}" tabindex="0"><td class="n">${i+1}</td><td>${esc(c.n)}</td><td>${esc(c.d)}</td></tr>`).join("");
+  if(showAcc) rows+=v.acc.map(([k])=>`<tr class="row ${sel==="acc-"+k?"on":""}" data-id="acc-${k}" tabindex="0"><td class="n c">${AK[k]}</td><td>${esc(A[k].n)}</td><td>${esc(A[k].w)}</td></tr>`).join("");
+  document.getElementById("tbody").innerHTML=rows;
+  document.getElementById("tog-acc").setAttribute("aria-pressed",showAcc);
+  detail();
+}
+function detail(){
+  const el=document.getElementById("detail");
+  if(!sel) sel=view+"-0";
+  if(sel.startsWith("acc-")){
+    const a=A[sel.slice(4)];
+    el.innerHTML=`<div class="prompt"><b>$</b> cat zubehoer/${sel.slice(4)}.md</div><h2 class="c">${esc(a.n)}</h2>
+    <dl class="kv"><div><dt>Position</dt><dd>${esc(a.w)}</dd></div><div><dt>Wozu</dt><dd>${esc(a.f)}</dd></div><div class="tip"><dt>Praxistipp</dt><dd>${esc(a.t)}</dd></div></dl>`;
+    return;
+  }
+  const [vv,i]=sel.split("-"); const c=C.filter(x=>x.v===vv)[+i];
+  el.innerHTML=`<div class="prompt"><b>$</b> man x100vi ${esc(c.k)}  <span>· Handbuch-Teil ${esc(c.k)}</span></div><h2>${+i+1} · ${esc(c.n)}</h2>
+  <dl class="kv"><div><dt>Funktion</dt><dd>${esc(c.f)}</dd></div><div><dt>Werkseinstellung</dt><dd>${esc(c.d)}</dd></div><div><dt>Anpassen</dt><dd>${esc(c.c)}</dd></div><div class="tip"><dt>Praxistipp</dt><dd>${esc(c.t)}</dd></div></dl>
+  <div class="src">Quelle: <a href="https://fujifilm-dsc.com/en/manual/x100vi/about_this_camera/parts/" target="_blank" rel="noopener">Fujifilm X100VI Handbuch</a></div>`;
+}
+function pick(id){sel=id;render()}
+document.addEventListener("click",e=>{
+  const t=e.target.closest("[data-id]"); if(t){pick(t.dataset.id);return}
+  const tab=e.target.closest(".tab"); if(tab){location.hash=tab.dataset.view}
+});
+document.addEventListener("keydown",e=>{if((e.key==="Enter"||e.key===" ")&&e.target.dataset&&e.target.dataset.id){e.preventDefault();pick(e.target.dataset.id)}});
+document.getElementById("tog-acc").addEventListener("click",()=>{showAcc=!showAcc;try{localStorage.setItem("x100vi-acc",showAcc?"1":"0")}catch(e){} if(!showAcc&&sel&&sel.startsWith("acc-"))sel=null;render()});
+function route(){const h=location.hash.slice(1);view=V[h]?h:"oben";sel=null;render()}
+window.addEventListener("hashchange",route);route();
+</script>
+</body>
+</html>
