@@ -72,7 +72,7 @@ button{font:inherit;cursor:pointer}
 @media (max-width:860px){.stage{border-right:0;border-bottom:1px solid var(--line)}}
 .view-label{font-size:.82rem;color:var(--dim)}
 .view-label b{color:var(--fg);font-weight:600}
-svg.cam{width:100%;height:auto;display:block;max-width:100%;border-radius:11px}
+svg.cam{width:100%;height:auto;max-height:72vh;display:block;max-width:100%;border-radius:11px}
 svg .b{fill:var(--body);stroke:var(--metal);stroke-width:2}
 svg .m{fill:var(--metal);stroke:#56635a;stroke-width:1.5}
 svg .g{fill:#0b0f0d;stroke:var(--metal);stroke-width:1.5}
@@ -212,8 +212,8 @@ const V = {
     acc:[["tasche",520,880],["cuff",95,520],["leash",1900,520]]},
   hinten:{img:"img/hinten-sw.jpg",label:"Rückansicht · Oberseite oben",
     acc:[["grip",1060,330],["folie",640,960],["tasche",1560,1170]]},
-  seite:{img:"img/seite-sw.jpg",label:"Seitenansicht · Fokusmodus-Schalter, Objektiv zeigt nach unten",
-    acc:[["uv",1430,1095],["leash",560,140],["tasche",1400,600]]},
+  seite:{img:"img/seite-sw.jpg",label:"Seitenansicht · Fokusmodus-Schalter, Objektiv zeigt nach links",
+    w:1500,h:2000,acc:[["uv",405,1430],["leash",1360,560],["tasche",900,1400]]},
   unten:{img:"img/unten-sw.jpg",label:"Unterseite · Taschenklappe geöffnet",
     acc:[["tasche",580,640],["akku",1500,900],["uv",1150,1170],["cuff",1900,820]]}
 };
@@ -352,17 +352,17 @@ const C = [
   c:"—",
   t:"Einstellen, während der EVF Text zeigt, bis die Schrift scharf ist."},
  // SEITE
- {v:"seite",x:1075,y:800,n:"Fokusmodus-Schalter",k:"L",
+ {v:"seite",x:700,y:1075,n:"Fokusmodus-Schalter",k:"L",
   f:"Schiebeschalter für den Fokusmodus: M, C, S.",
   d:"S = Einzel-AF, C = kontinuierlicher AF, M = manuell.",
   c:"AF-Bereich und AF-C-Profile in den AF/MF-Einstellungen.",
   t:"Zone-Fokus: Schalter auf M, Fokusring auf 2 bis 3 m, Blende f/8. Dann bist du sofort schussbereit. Die Tasche lässt den Schalter frei."},
- {v:"seite",x:680,y:700,n:"Trageöse",k:"K",
+ {v:"seite",x:800,y:680,n:"Trageöse",k:"K",
   f:"Öse für Gurt oder Handschlaufe, auf beiden Seiten.",
   d:"—",
   c:"Anchor-Systeme wie Peak Design passen.",
   t:"Bei dir mit Peak-Design-Anchor bestückt."},
- {v:"seite",x:1100,y:1010,n:"Steuer-/Fokusring",k:"N",
+ {v:"seite",x:490,y:1100,n:"Steuer-/Fokusring",k:"N",
   f:"Fokussieren bei M, sonst Schnellzugriff.",
   d:"STANDARD: digitaler Telekonverter.",
   c:"Siehe Draufsicht.",
@@ -405,7 +405,7 @@ function esc(s){return s.replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/"/g
 // Markierungen am Handy vergrößern: Kreisradius mindestens ~13 px auf dem Bildschirm
 function sizeMarks(){
   const svg=document.querySelector("svg.cam"); if(!svg) return;
-  const s=(svg.getBoundingClientRect().width||800)/2000;
+  const m=svg.getScreenCTM(); const s=m?m.a:(svg.getBoundingClientRect().width||800)/2000;
   const k=Math.max(1, 13/(34*s));
   svg.querySelectorAll(".mk").forEach(g=>g.setAttribute("transform","scale("+k.toFixed(2)+")"));
 }
@@ -417,7 +417,7 @@ function render(){
   const items=C.filter(c=>c.v===view);
   const hs=items.map((c,i)=>{const id=view+"-"+i;return `<g class="hs ${sel===id?"on":""}" tabindex="0" role="button" aria-label="${esc(c.n)}" data-id="${id}" transform="translate(${c.x} ${c.y})"><g class="mk"><circle cx="0" cy="0" r="34"/><text x="0" y="0">${i+1}</text></g></g>`}).join("");
   const ac=v.acc.map(([k,x,y])=>{const id="acc-"+k;return `<g class="hs acc ${sel===id?"on":""}" tabindex="0" role="button" aria-label="${esc(A[k].n)}" data-id="${id}" transform="translate(${x} ${y})"><g class="mk"><rect x="-28" y="-28" width="56" height="56" transform="rotate(45)"/><text x="0" y="0">${AK[k]}</text></g></g>`}).join("");
-  document.getElementById("svgs").innerHTML=`<svg class="cam ${showAcc?"":"hide-acc"}" viewBox="0 0 2000 1500" role="img" aria-label="Foto X100VI ${view}"><image href="${v.img}" x="0" y="0" width="2000" height="1500"/>${hs}${ac}</svg>`;
+  document.getElementById("svgs").innerHTML=`<svg class="cam ${showAcc?"":"hide-acc"}" viewBox="0 0 ${v.w||2000} ${v.h||1500}" role="img" aria-label="Foto X100VI ${view}"><image href="${v.img}" x="0" y="0" width="${v.w||2000}" height="${v.h||1500}"/>${hs}${ac}</svg>`;
   sizeMarks();
   document.getElementById("listhead").textContent=`$ ls ./${view}  (${items.length} Elemente${showAcc?", "+v.acc.length+" Zubehör":""})`;
   let rows=items.map((c,i)=>`<tr class="row ${sel===view+"-"+i?"on":""}" data-id="${view}-${i}" tabindex="0"><td class="n">${i+1}</td><td>${esc(c.n)}</td><td>${esc(c.d)}</td></tr>`).join("");
