@@ -206,15 +206,15 @@ tr.row{cursor:pointer} tr.row:hover td{background:var(--hover)} tr.row.on td{bac
 
 <script>
 const V = {
-  oben:{img:"img/oben.jpg",label:"Draufsicht · Objektiv zeigt nach unten",
+  oben:{img:"img/oben-sw.jpg",label:"Draufsicht · Objektiv zeigt nach unten",
     acc:[["grip",560,540],["uv",1300,1075],["cuff",130,700],["leash",1820,640]]},
-  vorne:{img:"img/vorne.jpg",label:"Vorderansicht · in der LC-X100V-Tasche, Frontring statt Filter",
+  vorne:{img:"img/vorne-sw.jpg",label:"Vorderansicht · in der LC-X100V-Tasche, Frontring statt Filter",
     acc:[["tasche",520,880],["cuff",95,520],["leash",1900,520]]},
-  hinten:{img:"img/hinten.jpg",label:"Rückansicht · Foto gedreht, Oberseite oben",
+  hinten:{img:"img/hinten-sw.jpg",label:"Rückansicht · Oberseite oben",
     acc:[["grip",1060,330],["folie",640,960],["tasche",1560,1170]]},
-  seite:{img:"img/seite.jpg",label:"Seitenansicht · Fokusmodus-Schalter, Objektiv zeigt nach unten",
+  seite:{img:"img/seite-sw.jpg",label:"Seitenansicht · Fokusmodus-Schalter, Objektiv zeigt nach unten",
     acc:[["uv",1430,1095],["leash",560,140],["tasche",1400,600]]},
-  unten:{img:"img/unten.jpg",label:"Unterseite · Taschenklappe geöffnet",
+  unten:{img:"img/unten-sw.jpg",label:"Unterseite · Taschenklappe geöffnet",
     acc:[["tasche",580,640],["akku",1500,900],["uv",1150,1170],["cuff",1900,820]]}
 };
 const C = [
@@ -402,14 +402,23 @@ const AK = {grip:"G",uv:"U",folie:"F",akku:"B",cuff:"C",leash:"L",tasche:"T"};
 let view="oben", sel=null, showAcc=true;
 try{ if(localStorage.getItem("x100vi-acc")==="0") showAcc=false }catch(e){}
 function esc(s){return s.replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/"/g,"&quot;")}
+// Markierungen am Handy vergrößern: Kreisradius mindestens ~13 px auf dem Bildschirm
+function sizeMarks(){
+  const svg=document.querySelector("svg.cam"); if(!svg) return;
+  const s=(svg.getBoundingClientRect().width||800)/2000;
+  const k=Math.max(1, 13/(34*s));
+  svg.querySelectorAll(".mk").forEach(g=>g.setAttribute("transform","scale("+k.toFixed(2)+")"));
+}
+window.addEventListener("resize",sizeMarks);
 function render(){
   const v=V[view];
   document.querySelectorAll(".tabbar button").forEach(b=>{if(b.dataset.view===view)b.setAttribute("aria-current","page");else b.removeAttribute("aria-current")});
   document.getElementById("vlabel").innerHTML=`<b>${view}</b> · ${v.label}`;
   const items=C.filter(c=>c.v===view);
-  const hs=items.map((c,i)=>{const id=view+"-"+i;return `<g class="hs ${sel===id?"on":""}" tabindex="0" role="button" aria-label="${esc(c.n)}" data-id="${id}"><circle cx="${c.x}" cy="${c.y}" r="34"/><text x="${c.x}" y="${c.y}">${i+1}</text></g>`}).join("");
-  const ac=v.acc.map(([k,x,y])=>{const id="acc-"+k;return `<g class="hs acc ${sel===id?"on":""}" tabindex="0" role="button" aria-label="${esc(A[k].n)}" data-id="${id}"><rect x="${x-28}" y="${y-28}" width="56" height="56" transform="rotate(45 ${x} ${y})"/><text x="${x}" y="${y}">${AK[k]}</text></g>`}).join("");
+  const hs=items.map((c,i)=>{const id=view+"-"+i;return `<g class="hs ${sel===id?"on":""}" tabindex="0" role="button" aria-label="${esc(c.n)}" data-id="${id}" transform="translate(${c.x} ${c.y})"><g class="mk"><circle cx="0" cy="0" r="34"/><text x="0" y="0">${i+1}</text></g></g>`}).join("");
+  const ac=v.acc.map(([k,x,y])=>{const id="acc-"+k;return `<g class="hs acc ${sel===id?"on":""}" tabindex="0" role="button" aria-label="${esc(A[k].n)}" data-id="${id}" transform="translate(${x} ${y})"><g class="mk"><rect x="-28" y="-28" width="56" height="56" transform="rotate(45)"/><text x="0" y="0">${AK[k]}</text></g></g>`}).join("");
   document.getElementById("svgs").innerHTML=`<svg class="cam ${showAcc?"":"hide-acc"}" viewBox="0 0 2000 1500" role="img" aria-label="Foto X100VI ${view}"><image href="${v.img}" x="0" y="0" width="2000" height="1500"/>${hs}${ac}</svg>`;
+  sizeMarks();
   document.getElementById("listhead").textContent=`$ ls ./${view}  (${items.length} Elemente${showAcc?", "+v.acc.length+" Zubehör":""})`;
   let rows=items.map((c,i)=>`<tr class="row ${sel===view+"-"+i?"on":""}" data-id="${view}-${i}" tabindex="0"><td class="n">${i+1}</td><td>${esc(c.n)}</td><td>${esc(c.d)}</td></tr>`).join("");
   if(showAcc) rows+=v.acc.map(([k])=>`<tr class="row ${sel==="acc-"+k?"on":""}" data-id="acc-${k}" tabindex="0"><td class="n c">${AK[k]}</td><td>${esc(A[k].n)}</td><td>${esc(A[k].w)}</td></tr>`).join("");
