@@ -8,6 +8,7 @@ Interaktive Karte aller Bedienelemente der Fujifilm X100VI (oben, vorne, hinten,
 - `img/` – Schwarz-Weiß-Zeichnungen nach eigenen Fotos der Kamera, ohne Metadaten
 - Inhalte geprüft gegen das [offizielle Fujifilm-Handbuch](https://fujifilm-dsc.com/en/manual/x100vi/); keine Fujifilm-Bilder eingebunden.
 - `icon.svg`, `icons/` – Logo im Langschatten-Stil wie die anderen Seiten
+- `manifest.json`, `sw.js` – installierbar und offline nutzbar (wie Erste Hilfe)
 - `shared/ios-nav.js` – Kopie aus mvs2-bot.github.io (Zurück/Neu laden in der iOS-Web-App)
 
 Kopfleiste und Navigationsleiste unten sind von der Erste-Hilfe-Seite übernommen; Hell/Dunkel folgt der gemeinsamen Einstellung `overall-theme`.

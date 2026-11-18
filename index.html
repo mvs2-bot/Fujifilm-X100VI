@@ -17,6 +17,7 @@
 <link rel="icon" href="icons/favicon-32.png" type="image/png" sizes="32x32">
 <link rel="icon" href="icon.svg" type="image/svg+xml">
 <link rel="apple-touch-icon" href="icons/apple-touch-icon.png" sizes="180x180">
+<link rel="manifest" href="manifest.json">
 <script>
 // Darstellung gilt für alle Seiten (overall-theme), vor dem ersten Rendern setzen. Ohne Wahl folgt die Seite dem Gerät.
 (function(){var t=null;try{t=localStorage.getItem('overall-theme')||localStorage.getItem('dash-theme')}catch(e){}
@@ -473,6 +474,11 @@ window.addEventListener("hashchange",route);route();
   if(window.matchMedia)matchMedia('(prefers-color-scheme: dark)').addEventListener('change',e=>{if(!own())apply(e.matches?'dark':'light',false)});
   window.addEventListener('storage',e=>{if(e.key==='overall-theme'&&(e.newValue==='dark'||e.newValue==='light'))apply(e.newValue,false)});
 })();
+</script>
+<script>
+// Installierbar und offline nutzbar (Service Worker wie bei Erste Hilfe)
+if('serviceWorker' in navigator&&(location.protocol==='https:'||location.hostname==='localhost'))
+  window.addEventListener('load',()=>navigator.serviceWorker.register('./sw.js').catch(()=>{}));
 </script>
 <script src="shared/ios-nav.js" data-bottom="14" defer></script>
 </body>
