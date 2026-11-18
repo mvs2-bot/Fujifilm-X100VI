@@ -51,7 +51,7 @@ document.documentElement.setAttribute('data-theme',t)})();
 html{font-size:16.5px;-webkit-text-size-adjust:100%}
 body{background:var(--bg);color:var(--fg);font-family:var(--ui);font-size:1rem;line-height:1.45;-webkit-font-smoothing:antialiased;
   margin:0;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-top:0;padding-bottom:calc(24px + env(safe-area-inset-bottom,0px))}
-.wrap{max-width:1180px;margin:0 auto;padding-top:14px;display:flex;flex-direction:column;gap:12px}
+.wrap{max-width:1180px;margin:0 auto;padding-top:6px;display:flex;flex-direction:column;gap:12px}
 .term{border:1px solid var(--line);background:var(--panel);border-radius:14px;overflow:hidden}
 .bar{display:flex;align-items:center;gap:8px;padding:10px 14px;border-bottom:1px solid var(--line);font-family:var(--mono);font-size:.75rem;color:var(--dim)}
 .dot{width:10px;height:10px;border-radius:50%;background:var(--line)}
@@ -69,10 +69,8 @@ button{font:inherit;cursor:pointer}
 :focus-visible{outline:2px solid var(--cyan);outline-offset:2px}
 .main{display:grid;grid-template-columns:minmax(0,1.45fr) minmax(0,1fr)}
 @media (max-width:860px){.main{grid-template-columns:minmax(0,1fr)}}
-.stage{padding:14px;border-right:1px solid var(--line);min-width:0;display:flex;flex-direction:column;gap:10px}
+.stage{padding:6px 14px 12px;border-right:1px solid var(--line);min-width:0;display:flex;flex-direction:column;gap:10px}
 @media (max-width:860px){.stage{border-right:0;border-bottom:1px solid var(--line)}}
-.view-label{font-size:.72rem;line-height:1.35;color:var(--dim)}
-.view-label b{color:var(--fg);font-weight:600}
 svg.cam{width:100%;height:auto;max-height:calc(100vh - 250px);display:block;max-width:100%;border-radius:11px}
 svg .b{fill:var(--body);stroke:var(--metal);stroke-width:2}
 svg .m{fill:var(--metal);stroke:#56635a;stroke-width:1.5}
@@ -184,7 +182,6 @@ tr.row{cursor:pointer} tr.row:hover td{background:var(--hover)} tr.row.on td{bac
           <button type="button" data-view="seite"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><rect x="8" y="5" width="8" height="15" rx="2"/><path d="M11 9h2M11 13h2"/></svg>Seite</button>
           <button type="button" data-view="unten"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="7" width="18" height="10" rx="2"/><circle cx="12" cy="12" r="1.5"/><path d="M15.5 10h3v4h-3"/></svg>Unten</button>
         </nav>
-        <div class="view-label" id="vlabel"></div>
         <div id="svgs"></div>
         <div class="legend"><span><i>●</i> Bedienelement</span><span><i class="c">◆</i> dein Zubehör</span></div>
       </div>
@@ -426,7 +423,6 @@ window.addEventListener("resize",sizeMarks);
 function render(){
   const v=V[view];
   document.querySelectorAll(".tabbar button").forEach(b=>{if(b.dataset.view===view)b.setAttribute("aria-current","page");else b.removeAttribute("aria-current")});
-  document.getElementById("vlabel").innerHTML=`<b>${view}</b> · ${v.label}`;
   const items=C.filter(c=>c.v===view);
   const hs=items.map((c,i)=>{const id=view+"-"+i;return `<g class="hs ${sel===id?"on":""}" tabindex="0" role="button" aria-label="${esc(c.n)}" data-id="${id}" transform="translate(${c.x} ${c.y})"><g class="mk"><circle cx="0" cy="0" r="34"/><text x="0" y="0">${i+1}</text></g></g>`}).join("");
   const ac=v.acc.map(([k,x,y])=>{const id="acc-"+k;return `<g class="hs acc ${sel===id?"on":""}" tabindex="0" role="button" aria-label="${esc(A[k].n)}" data-id="${id}" transform="translate(${x} ${y})"><g class="mk"><rect x="-28" y="-28" width="56" height="56" transform="rotate(45)"/><text x="0" y="0">${AK[k]}</text></g></g>`}).join("");
