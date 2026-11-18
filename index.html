@@ -5,8 +5,24 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="description" content="Interaktive Karte aller Bedienelemente der Fujifilm X100VI mit Funktion, Werkseinstellung und Praxistipps.">
 <meta name="theme-color" content="#0f1210">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="X100VI">
+<meta property="og:type" content="website">
+<meta property="og:title" content="X100VI Kamerakarte">
+<meta property="og:description" content="Alle Tasten und Räder der Fujifilm X100VI erklärt.">
+<meta property="og:url" content="https://mvs2-bot.github.io/Fujifilm-X100VI/">
+<meta property="og:image" content="https://mvs2-bot.github.io/Fujifilm-X100VI/icons/icon-512.png">
+<meta property="og:locale" content="de_DE">
+<link rel="icon" href="icons/favicon-32.png" type="image/png" sizes="32x32">
 <link rel="icon" href="icon.svg" type="image/svg+xml">
-<link rel="apple-touch-icon" href="icon.svg">
+<link rel="apple-touch-icon" href="icons/apple-touch-icon.png" sizes="180x180">
+<script>
+// Darstellung gilt für alle Seiten (overall-theme), vor dem ersten Rendern setzen. Ohne Wahl folgt die Seite dem Gerät.
+(function(){var t=null;try{t=localStorage.getItem('overall-theme')||localStorage.getItem('dash-theme')}catch(e){}
+if(t!=='dark'&&t!=='light')t=window.matchMedia&&matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light';
+document.documentElement.setAttribute('data-theme',t)})();
+</script>
 <title>X100VI Kamerakarte</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600;700&family=IBM+Plex+Sans:wght@400;500;600&display=swap">
@@ -17,11 +33,22 @@
   --fg:#d8e2da; --dim:#8a9a8f; --amber:#f2b544; --cyan:#6fd3c8; --red:#e56b5b;
   --mono:"JetBrains Mono",ui-monospace,"SFMono-Regular",Menlo,Consolas,monospace;
   --sans:"IBM Plex Sans",system-ui,-apple-system,"Segoe UI",sans-serif;
+  --hover:#1c231f; --sel:#222b25; --glass:rgba(15,18,16,.82); --bar:#1b211d; --amber-soft:rgba(242,181,68,.16);
+  --border:rgba(255,255,255,.1); --text:var(--fg); --card:var(--panel); --card-hover:var(--hover); --accent:var(--amber);
+  --ui:-apple-system,BlinkMacSystemFont,"SF Pro Text","Segoe UI",Roboto,Helvetica,Arial,sans-serif;
   color-scheme:dark;
+}
+[data-theme="light"]{
+  --bg:#f4f2ec; --panel:#fffdf8; --line:#ddd8cc; --body:#ece8de; --metal:#bdb7a8;
+  --fg:#1f2421; --dim:#5d675f; --amber:#a86400; --cyan:#0f6f66; --red:#c2412f;
+  --hover:#f1ede3; --sel:#ebe5d6; --glass:rgba(255,253,248,.85); --bar:#fffdf8; --amber-soft:rgba(168,100,0,.12);
+  --border:rgba(0,0,0,.08);
+  color-scheme:light;
 }
 *{box-sizing:border-box}
 body{background:var(--bg);color:var(--fg);font-family:var(--sans);font-size:15px;line-height:1.5;
-  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:20px 40px}
+  margin:0;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-top:0;padding-bottom:calc(96px + env(safe-area-inset-bottom,0px))}
+.wrap{padding-top:16px}
 .wrap{max-width:1180px;margin:0 auto;display:flex;flex-direction:column;gap:16px}
 .term{border:1px solid var(--line);background:var(--panel);border-radius:8px;overflow:hidden}
 .bar{display:flex;align-items:center;gap:8px;padding:8px 12px;border-bottom:1px solid var(--line);font-family:var(--mono);font-size:12px;color:var(--dim)}
@@ -29,21 +56,14 @@ body{background:var(--bg);color:var(--fg);font-family:var(--sans);font-size:15px
 .dot.r{background:var(--red)}.dot.a{background:var(--amber)}.dot.c{background:var(--cyan)}
 .bar span.path{margin-left:8px;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 header .inner{padding:16px 18px;display:flex;flex-direction:column;gap:6px}
-h1{font-family:var(--mono);font-size:clamp(20px,3.2vw,28px);margin:0;font-weight:700;letter-spacing:.02em;text-wrap:balance}
-h1 .p{color:var(--amber)}
+.intro-h{font-family:var(--mono);font-size:clamp(20px,3.2vw,28px);margin:0;font-weight:700;letter-spacing:.02em;text-wrap:balance}
+.intro-h .p{color:var(--amber)}
 .sub{color:var(--dim);font-size:14px;margin:0;max-width:72ch}
 .sub a{color:var(--cyan)}
 .cursor{display:inline-block;width:.6em;height:1em;background:var(--amber);vertical-align:-2px;animation:blink 1.1s steps(1) infinite}
 @keyframes blink{50%{opacity:0}}
 @media (prefers-reduced-motion:reduce){.cursor{animation:none}}
-.controls{display:flex;flex-wrap:wrap;gap:8px;align-items:center;justify-content:space-between;padding:10px 12px;border-bottom:1px solid var(--line)}
-.tabs,.toggles{display:flex;flex-wrap:wrap;gap:6px}
 button{font:inherit;cursor:pointer}
-.tab{font-family:var(--mono);font-size:13px;background:transparent;color:var(--dim);border:1px solid var(--line);border-radius:4px;padding:6px 12px}
-.tab[aria-selected="true"]{color:var(--bg);background:var(--amber);border-color:var(--amber);font-weight:600}
-.tab:hover{color:var(--fg)}
-.tog{font-family:var(--mono);font-size:12px;background:transparent;color:var(--cyan);border:1px dashed var(--cyan);border-radius:4px;padding:6px 10px}
-.tog[aria-pressed="false"]{color:var(--dim);border-color:var(--line)}
 :focus-visible{outline:2px solid var(--cyan);outline-offset:2px}
 .main{display:grid;grid-template-columns:minmax(0,1.45fr) minmax(0,1fr)}
 @media (max-width:860px){.main{grid-template-columns:minmax(0,1fr)}}
@@ -60,14 +80,14 @@ svg .tk{fill:none;stroke:#56635a;stroke-width:1}
 svg .t{fill:var(--dim);font-family:var(--mono);font-size:10px}
 svg .tb{fill:var(--fg);font-family:var(--mono);font-size:11px}
 .hs{cursor:pointer}
-.hs circle{fill:rgba(15,18,16,.85);stroke:var(--amber);stroke-width:6}
-.hs text{fill:var(--amber);font-family:var(--mono);font-size:32px;font-weight:700;text-anchor:middle;dominant-baseline:central;pointer-events:none}
-.hs:hover circle,.hs:focus-visible circle{fill:var(--amber)}
-.hs:hover text,.hs:focus-visible text{fill:var(--bg)}
-.hs.on circle{fill:var(--amber)} .hs.on text{fill:var(--bg)}
+.hs circle{fill:rgba(15,18,16,.85);stroke:#f2b544;stroke-width:6}
+.hs text{fill:#f2b544;font-family:var(--mono);font-size:32px;font-weight:700;text-anchor:middle;dominant-baseline:central;pointer-events:none}
+.hs:hover circle,.hs:focus-visible circle{fill:#f2b544}
+.hs:hover text,.hs:focus-visible text{fill:#0f1210}
+.hs.on circle{fill:#f2b544} .hs.on text{fill:#0f1210}
 .hs:focus{outline:none}
-.acc rect{fill:rgba(15,18,16,.85);stroke:var(--cyan);stroke-width:6}
-.acc text{fill:var(--cyan)}
+.acc rect{fill:rgba(15,18,16,.85);stroke:#6fd3c8;stroke-width:6}
+.acc text{fill:#6fd3c8}
 .acc:hover rect,.acc:focus-visible rect,.acc.on rect{fill:var(--cyan)}
 .acc:hover text,.acc:focus-visible text,.acc.on text{fill:var(--bg)}
 .hide-acc .acc{display:none}
@@ -93,36 +113,62 @@ th,td{text-align:left;padding:6px 8px;border-bottom:1px solid var(--line);vertic
 th{font-family:var(--mono);font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--dim);font-weight:400}
 td.n{font-family:var(--mono);color:var(--amber);width:2.5em;font-variant-numeric:tabular-nums}
 td.n.c{color:var(--cyan)}
-tr.row{cursor:pointer} tr.row:hover td{background:#1c231f} tr.row.on td{background:#222b25}
+tr.row{cursor:pointer} tr.row:hover td{background:var(--hover)} tr.row.on td{background:var(--sel)}
 .sec-h{font-family:var(--mono);font-size:12px;color:var(--dim);padding:12px 12px 6px}
 .refs{padding:14px 18px;display:flex;flex-direction:column;gap:6px;font-size:13px;color:var(--dim)}
 .refs a{color:var(--cyan)}
 .refs ul{margin:0;padding-left:18px}
+/* Sticky-Kopfleiste und schwebende Tab-Leiste unten, übernommen von Erste Hilfe */
+.top-header{position:sticky;top:0;z-index:1000;margin-left:calc(-1 * max(16px,env(safe-area-inset-left,0px)));margin-right:calc(-1 * max(16px,env(safe-area-inset-right,0px)));padding-top:env(safe-area-inset-top,0px);
+  background:var(--glass);-webkit-backdrop-filter:blur(18px);backdrop-filter:blur(18px);border-bottom:1px solid var(--border);font-family:var(--ui)}
+.top-header-inner{max-width:1180px;margin:0 auto;padding:0 16px}
+.top-bar-row{height:56px;display:flex;align-items:center;justify-content:space-between;gap:10px}
+.brand{display:flex;align-items:center;gap:10px;min-width:0}
+.brand-logo{width:36px;height:36px;border-radius:9px;flex:none;display:block}
+.brand h1{margin:0;font-family:var(--ui);font-size:22px;font-weight:700;letter-spacing:-.02em;line-height:1.15;white-space:nowrap;color:var(--fg)}
+.header-actions{display:flex;align-items:center;gap:8px}
+.acc-btn{display:inline-flex;align-items:center;gap:5px;height:34px;padding:0 12px;border-radius:999px;border:1px solid var(--cyan);background:transparent;color:var(--cyan);font-family:var(--ui);font-weight:700;font-size:.84rem;letter-spacing:-.01em;white-space:nowrap;transition:transform .15s}
+.acc-btn[aria-pressed="true"]{background:var(--cyan);color:var(--bg)}
+.acc-btn:active,.theme-toggle:active{transform:scale(.94)}
+.theme-toggle{width:34px;height:34px;border-radius:50%;border:1px solid var(--border);background:var(--body);color:var(--fg);display:flex;align-items:center;justify-content:center;padding:0;flex:none}
+.theme-toggle svg{width:18px;height:18px}
+.tabbar{position:fixed;z-index:45;left:calc(12px + env(safe-area-inset-left,0px));right:calc(12px + env(safe-area-inset-right,0px));bottom:calc(10px + env(safe-area-inset-bottom,0px));
+  max-width:540px;margin:0 auto;display:grid;grid-template-columns:repeat(5,1fr);height:62px;padding:0 6px;border-radius:22px;
+  background:var(--bar);box-shadow:0 8px 28px rgba(0,0,0,.16),0 0 0 .5px rgba(0,0,0,.06);font-family:var(--ui)}
+[data-theme="dark"] .tabbar{box-shadow:0 8px 28px rgba(0,0,0,.6),0 0 0 .5px rgba(255,255,255,.1)}
+.tabbar button{position:relative;z-index:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;padding:0;border:0;background:none;font-family:inherit;font-size:11px;font-weight:500;color:var(--fg)}
+.tabbar .ic{width:24px;height:24px;flex:none;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+.tabbar button[aria-current="page"]::before{content:"";position:absolute;inset:7px 4px;z-index:-1;border-radius:16px;background:var(--amber-soft)}
+.tabbar button[aria-current="page"]{color:var(--amber);font-weight:600}
+.tabbar button[aria-current="page"] .ic{stroke-width:2.2}
+@media (max-width:380px){.brand h1{font-size:19px}.acc-btn{padding:0 10px}}
 </style>
 </head>
 <body>
+<header class="top-header">
+  <div class="top-header-inner">
+    <div class="top-bar-row">
+      <div class="brand"><img class="brand-logo" src="icon.svg" alt=""><h1>X100VI</h1></div>
+      <div class="header-actions">
+        <button class="acc-btn" id="tog-acc" type="button" aria-pressed="true" title="Mein Zubehör ein-/ausblenden">◆ Zubehör</button>
+        <button id="themeToggle" class="theme-toggle" type="button" aria-label="Farbschema wechseln" title="Hell / Dunkel wechseln">
+          <svg id="iconSun" style="display:none" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="5"/><path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/></svg>
+          <svg id="iconMoon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
+        </button>
+      </div>
+    </div>
+  </div>
+</header>
 <div class="wrap">
   <header class="term">
     <div class="bar"><span class="dot r"></span><span class="dot a"></span><span class="dot c"></span><span class="path">~/x100vi/kamerakarte — zsh</span></div>
     <div class="inner">
-      <h1><span class="p">$</span> x100vi --karte <span class="cursor" aria-hidden="true"></span></h1>
+      <h2 class="intro-h"><span class="p">$</span> x100vi --karte <span class="cursor" aria-hidden="true"></span></h2>
       <p class="sub">Fujifilm X100VI (schwarz), FUJINON 23 mm F2 (KB-äquivalent 35 mm). Elemente anklicken für Funktion, Werkseinstellung, Anpassung und Praxistipp. Fotos: eigene Aufnahmen. Bezeichnungen und Standardbelegungen stammen aus dem <a href="https://fujifilm-dsc.com/en/manual/x100vi/about_this_camera/parts/" target="_blank" rel="noopener">offiziellen Handbuch (Parts of the Camera)</a>.</p>
     </div>
   </header>
 
   <section class="term" id="app">
-    <div class="controls">
-      <div class="tabs" role="tablist" aria-label="Ansicht">
-        <button class="tab" role="tab" data-view="oben" id="tab-oben">oben</button>
-        <button class="tab" role="tab" data-view="vorne" id="tab-vorne">vorne</button>
-        <button class="tab" role="tab" data-view="hinten" id="tab-hinten">hinten</button>
-        <button class="tab" role="tab" data-view="seite" id="tab-seite">seite</button>
-        <button class="tab" role="tab" data-view="unten" id="tab-unten">unten</button>
-      </div>
-      <div class="toggles">
-        <button class="tog" id="tog-acc" aria-pressed="true">[◆] mein Zubehör</button>
-      </div>
-    </div>
     <div class="main">
       <div class="stage" id="stage">
         <div class="view-label" id="vlabel"></div>
@@ -350,7 +396,7 @@ try{ if(localStorage.getItem("x100vi-acc")==="0") showAcc=false }catch(e){}
 function esc(s){return s.replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/"/g,"&quot;")}
 function render(){
   const v=V[view];
-  document.querySelectorAll(".tab").forEach(b=>b.setAttribute("aria-selected",b.dataset.view===view));
+  document.querySelectorAll(".tabbar button").forEach(b=>{if(b.dataset.view===view)b.setAttribute("aria-current","page");else b.removeAttribute("aria-current")});
   document.getElementById("vlabel").innerHTML=`<b>${view}</b> · ${v.label}`;
   const items=C.filter(c=>c.v===view);
   const hs=items.map((c,i)=>{const id=view+"-"+i;return `<g class="hs ${sel===id?"on":""}" tabindex="0" role="button" aria-label="${esc(c.n)}" data-id="${id}"><circle cx="${c.x}" cy="${c.y}" r="34"/><text x="${c.x}" y="${c.y}">${i+1}</text></g>`}).join("");
@@ -380,12 +426,32 @@ function detail(){
 function pick(id){sel=id;render()}
 document.addEventListener("click",e=>{
   const t=e.target.closest("[data-id]"); if(t){pick(t.dataset.id);return}
-  const tab=e.target.closest(".tab"); if(tab){location.hash=tab.dataset.view}
+  const tab=e.target.closest(".tabbar button"); if(tab){if(location.hash.slice(1)!==tab.dataset.view)location.hash=tab.dataset.view;window.scrollTo(0,0)}
 });
 document.addEventListener("keydown",e=>{if((e.key==="Enter"||e.key===" ")&&e.target.dataset&&e.target.dataset.id){e.preventDefault();pick(e.target.dataset.id)}});
 document.getElementById("tog-acc").addEventListener("click",()=>{showAcc=!showAcc;try{localStorage.setItem("x100vi-acc",showAcc?"1":"0")}catch(e){} if(!showAcc&&sel&&sel.startsWith("acc-"))sel=null;render()});
 function route(){const h=location.hash.slice(1);view=V[h]?h:"oben";sel=null;render()}
 window.addEventListener("hashchange",route);route();
 </script>
+<nav class="tabbar" aria-label="Ansicht">
+  <button type="button" data-view="oben"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="9" width="18" height="9" rx="2"/><path d="M6 9V6.5h4V9M15 9V7h4v2"/><circle cx="14" cy="13.5" r="2"/></svg>Oben</button>
+  <button type="button" data-view="vorne"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><rect x="2.5" y="6" width="19" height="13" rx="2.5"/><circle cx="14" cy="12.5" r="4"/><path d="M5 9h3M17.5 8.5h2"/></svg>Vorne</button>
+  <button type="button" data-view="hinten"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><rect x="2.5" y="6" width="19" height="13" rx="2.5"/><rect x="5" y="9" width="10" height="7" rx="1"/><circle cx="18.5" cy="12.5" r="1.5"/></svg>Hinten</button>
+  <button type="button" data-view="seite"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><rect x="8" y="5" width="8" height="15" rx="2"/><path d="M11 9h2M11 13h2"/></svg>Seite</button>
+  <button type="button" data-view="unten"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="7" width="18" height="10" rx="2"/><circle cx="12" cy="12" r="1.5"/><path d="M15.5 10h3v4h-3"/></svg>Unten</button>
+</nav>
+<script>
+(function(){
+  const root=document.documentElement,sun=document.getElementById('iconSun'),moon=document.getElementById('iconMoon'),meta=document.querySelector('meta[name="theme-color"]');
+  function apply(t,save){root.setAttribute('data-theme',t);if(save){try{localStorage.setItem('overall-theme',t)}catch(e){}}
+    const d=t==='dark';sun.style.display=d?'block':'none';moon.style.display=d?'none':'block';if(meta)meta.setAttribute('content',d?'#0f1210':'#f4f2ec')}
+  apply(root.getAttribute('data-theme')==='dark'?'dark':'light',false);
+  document.getElementById('themeToggle').addEventListener('click',()=>apply(root.getAttribute('data-theme')==='dark'?'light':'dark',true));
+  function own(){try{return localStorage.getItem('overall-theme')||localStorage.getItem('dash-theme')}catch(e){return null}}
+  if(window.matchMedia)matchMedia('(prefers-color-scheme: dark)').addEventListener('change',e=>{if(!own())apply(e.matches?'dark':'light',false)});
+  window.addEventListener('storage',e=>{if(e.key==='overall-theme'&&(e.newValue==='dark'||e.newValue==='light'))apply(e.newValue,false)});
+})();
+</script>
+<script src="shared/ios-nav.js" data-bottom="84" defer></script>
 </body>
 </html>
