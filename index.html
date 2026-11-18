@@ -17,6 +17,7 @@
 <link rel="icon" href="icons/favicon-32.png" type="image/png" sizes="32x32">
 <link rel="icon" href="icon.svg" type="image/svg+xml">
 <link rel="apple-touch-icon" href="icons/apple-touch-icon.png" sizes="180x180">
+<link rel="manifest" href="manifest.json">
 <script>
 // Darstellung gilt für alle Seiten (overall-theme), vor dem ersten Rendern setzen. Ohne Wahl folgt die Seite dem Gerät.
 (function(){var t=null;try{t=localStorage.getItem('overall-theme')||localStorage.getItem('dash-theme')}catch(e){}
@@ -49,7 +50,7 @@ document.documentElement.setAttribute('data-theme',t)})();
 /* Typo-Skala wie Erste Hilfe: Wurzel 16.5px, Text .9rem, Titel 1.05rem, Labels .72rem; Abstände 6/10/12/14/16 */
 html{font-size:16.5px;-webkit-text-size-adjust:100%}
 body{background:var(--bg);color:var(--fg);font-family:var(--ui);font-size:1rem;line-height:1.45;-webkit-font-smoothing:antialiased;
-  margin:0;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-top:0;padding-bottom:calc(96px + env(safe-area-inset-bottom,0px))}
+  margin:0;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-top:0;padding-bottom:calc(24px + env(safe-area-inset-bottom,0px))}
 .wrap{max-width:1180px;margin:0 auto;padding-top:14px;display:flex;flex-direction:column;gap:12px}
 .term{border:1px solid var(--line);background:var(--panel);border-radius:14px;overflow:hidden}
 .bar{display:flex;align-items:center;gap:8px;padding:10px 14px;border-bottom:1px solid var(--line);font-family:var(--mono);font-size:.75rem;color:var(--dim)}
@@ -70,9 +71,9 @@ button{font:inherit;cursor:pointer}
 @media (max-width:860px){.main{grid-template-columns:minmax(0,1fr)}}
 .stage{padding:14px;border-right:1px solid var(--line);min-width:0;display:flex;flex-direction:column;gap:10px}
 @media (max-width:860px){.stage{border-right:0;border-bottom:1px solid var(--line)}}
-.view-label{font-size:.82rem;color:var(--dim)}
+.view-label{font-size:.72rem;line-height:1.35;color:var(--dim)}
 .view-label b{color:var(--fg);font-weight:600}
-svg.cam{width:100%;height:auto;max-height:72vh;display:block;max-width:100%;border-radius:11px}
+svg.cam{width:100%;height:auto;max-height:calc(100vh - 250px);display:block;max-width:100%;border-radius:11px}
 svg .b{fill:var(--body);stroke:var(--metal);stroke-width:2}
 svg .m{fill:var(--metal);stroke:#56635a;stroke-width:1.5}
 svg .g{fill:#0b0f0d;stroke:var(--metal);stroke-width:1.5}
@@ -133,13 +134,11 @@ tr.row{cursor:pointer} tr.row:hover td{background:var(--hover)} tr.row.on td{bac
 .acc-btn:active,.theme-toggle:active{transform:scale(.94)}
 .theme-toggle{width:34px;height:34px;border-radius:50%;border:1px solid var(--border);background:var(--body);color:var(--fg);display:flex;align-items:center;justify-content:center;padding:0;flex:none}
 .theme-toggle svg{width:18px;height:18px}
-.tabbar{position:fixed;z-index:45;left:calc(12px + env(safe-area-inset-left,0px));right:calc(12px + env(safe-area-inset-right,0px));bottom:calc(10px + env(safe-area-inset-bottom,0px));
-  max-width:540px;margin:0 auto;display:grid;grid-template-columns:repeat(5,1fr);height:62px;padding:0 6px;border-radius:22px;
-  background:var(--bar);box-shadow:0 8px 28px rgba(0,0,0,.16),0 0 0 .5px rgba(0,0,0,.06);font-family:var(--ui)}
-[data-theme="dark"] .tabbar{box-shadow:0 8px 28px rgba(0,0,0,.6),0 0 0 .5px rgba(255,255,255,.1)}
-.tabbar button{position:relative;z-index:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;padding:0;border:0;background:none;font-family:inherit;font-size:11px;font-weight:500;color:var(--fg)}
-.tabbar .ic{width:24px;height:24px;flex:none;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
-.tabbar button[aria-current="page"]::before{content:"";position:absolute;inset:7px 4px;z-index:-1;border-radius:16px;background:var(--amber-soft)}
+/* Ansichten-Umschalter: fest oben im Bildbereich (Stil der Erste-Hilfe-Tab-Leiste) */
+.tabbar{display:grid;grid-template-columns:repeat(5,1fr);height:52px;padding:0 4px;border-radius:16px;background:var(--body);font-family:var(--ui)}
+.tabbar button{position:relative;z-index:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;padding:0;border:0;background:none;font-family:inherit;font-size:11px;font-weight:500;color:var(--fg)}
+.tabbar .ic{width:21px;height:21px;flex:none;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+.tabbar button[aria-current="page"]::before{content:"";position:absolute;inset:5px 2px;z-index:-1;border-radius:16px;background:var(--amber-soft)}
 .tabbar button[aria-current="page"]{color:var(--amber);font-weight:600}
 .tabbar button[aria-current="page"] .ic{stroke-width:2.2}
 @media (max-width:380px){.brand h1{font-size:19px}.acc-btn{padding:0 10px}}
@@ -149,6 +148,13 @@ tr.row{cursor:pointer} tr.row:hover td{background:var(--hover)} tr.row.on td{bac
 .intro[open] .chev{transform:rotate(90deg)}
 .intro:not([open]) summary{border-bottom:0}
 ::selection{background:var(--amber-soft);color:inherit}
+/* Bild + Umschalter bleiben beim Scrollen oben stehen */
+#app{overflow:clip}
+.stage{position:sticky;top:calc(56px + env(safe-area-inset-top,0px));z-index:5;background:var(--panel);align-self:start}
+@media (min-width:861px){#app{display:grid;grid-template-columns:minmax(0,1.45fr) minmax(0,1fr);grid-template-rows:auto auto 1fr}
+  .main{display:contents}.stage{grid-column:1;grid-row:1 / span 3}.detail{grid-column:2;grid-row:1}
+  #listhead{grid-column:2;grid-row:2}.list{grid-column:2;grid-row:3}}
+@media (max-width:860px){.main{display:contents}.stage{box-shadow:0 8px 12px -10px rgba(0,0,0,.3)}svg.cam{max-height:40vh}}
 </style>
 </head>
 <body>
@@ -171,9 +177,16 @@ tr.row{cursor:pointer} tr.row:hover td{background:var(--hover)} tr.row.on td{bac
   <section class="term" id="app">
     <div class="main">
       <div class="stage" id="stage">
+        <nav class="tabbar" aria-label="Ansicht">
+          <button type="button" data-view="oben"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="9" width="18" height="9" rx="2"/><path d="M6 9V6.5h4V9M15 9V7h4v2"/><circle cx="14" cy="13.5" r="2"/></svg>Oben</button>
+          <button type="button" data-view="vorne"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><rect x="2.5" y="6" width="19" height="13" rx="2.5"/><circle cx="14" cy="12.5" r="4"/><path d="M5 9h3M17.5 8.5h2"/></svg>Vorne</button>
+          <button type="button" data-view="hinten"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><rect x="2.5" y="6" width="19" height="13" rx="2.5"/><rect x="5" y="9" width="10" height="7" rx="1"/><circle cx="18.5" cy="12.5" r="1.5"/></svg>Hinten</button>
+          <button type="button" data-view="seite"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><rect x="8" y="5" width="8" height="15" rx="2"/><path d="M11 9h2M11 13h2"/></svg>Seite</button>
+          <button type="button" data-view="unten"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="7" width="18" height="10" rx="2"/><circle cx="12" cy="12" r="1.5"/><path d="M15.5 10h3v4h-3"/></svg>Unten</button>
+        </nav>
         <div class="view-label" id="vlabel"></div>
         <div id="svgs"></div>
-        <div class="legend"><span><i>●</i> Bedienelement</span><span><i class="c">◆</i> dein Zubehör</span><span>Fotos: eigene Aufnahmen</span></div>
+        <div class="legend"><span><i>●</i> Bedienelement</span><span><i class="c">◆</i> dein Zubehör</span></div>
       </div>
       <aside class="detail" id="detail" aria-live="polite"></aside>
     </div>
@@ -213,7 +226,7 @@ const V = {
   hinten:{img:"img/hinten-sw.jpg",label:"Rückansicht · Oberseite oben",
     acc:[["grip",1060,330],["folie",640,960],["tasche",1560,1170]]},
   seite:{img:"img/seite-sw.jpg",label:"Seitenansicht · Fokusmodus-Schalter, Objektiv zeigt nach links",
-    w:1500,h:2000,acc:[["uv",405,1430],["leash",1360,560],["tasche",900,1400]]},
+    w:2000,h:1545,acc:[["uv",484,678],["leash",1574,278],["tasche",1211,1211]]},
   unten:{img:"img/unten-sw.jpg",label:"Unterseite · Taschenklappe geöffnet",
     acc:[["tasche",580,640],["akku",1500,900],["uv",1150,1170],["cuff",1900,820]]}
 };
@@ -352,17 +365,17 @@ const C = [
   c:"—",
   t:"Einstellen, während der EVF Text zeigt, bis die Schrift scharf ist."},
  // SEITE
- {v:"seite",x:700,y:1075,n:"Fokusmodus-Schalter",k:"L",
+ {v:"seite",x:914,y:835,n:"Fokusmodus-Schalter",k:"L",
   f:"Schiebeschalter für den Fokusmodus: M, C, S.",
   d:"S = Einzel-AF, C = kontinuierlicher AF, M = manuell.",
   c:"AF-Bereich und AF-C-Profile in den AF/MF-Einstellungen.",
   t:"Zone-Fokus: Schalter auf M, Fokusring auf 2 bis 3 m, Blende f/8. Dann bist du sofort schussbereit. Die Tasche lässt den Schalter frei."},
- {v:"seite",x:800,y:680,n:"Trageöse",k:"K",
+ {v:"seite",x:1005,y:260,n:"Trageöse",k:"K",
   f:"Öse für Gurt oder Handschlaufe, auf beiden Seiten.",
   d:"—",
   c:"Anchor-Systeme wie Peak Design passen.",
   t:"Bei dir mit Peak-Design-Anchor bestückt."},
- {v:"seite",x:490,y:1100,n:"Steuer-/Fokusring",k:"N",
+ {v:"seite",x:660,y:847,n:"Steuer-/Fokusring",k:"N",
   f:"Fokussieren bei M, sonst Schnellzugriff.",
   d:"STANDARD: digitaler Telekonverter.",
   c:"Siehe Draufsicht.",
@@ -450,13 +463,6 @@ document.getElementById("tog-acc").addEventListener("click",()=>{showAcc=!showAc
 function route(){const h=location.hash.slice(1);view=V[h]?h:"oben";sel=null;render()}
 window.addEventListener("hashchange",route);route();
 </script>
-<nav class="tabbar" aria-label="Ansicht">
-  <button type="button" data-view="oben"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="9" width="18" height="9" rx="2"/><path d="M6 9V6.5h4V9M15 9V7h4v2"/><circle cx="14" cy="13.5" r="2"/></svg>Oben</button>
-  <button type="button" data-view="vorne"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><rect x="2.5" y="6" width="19" height="13" rx="2.5"/><circle cx="14" cy="12.5" r="4"/><path d="M5 9h3M17.5 8.5h2"/></svg>Vorne</button>
-  <button type="button" data-view="hinten"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><rect x="2.5" y="6" width="19" height="13" rx="2.5"/><rect x="5" y="9" width="10" height="7" rx="1"/><circle cx="18.5" cy="12.5" r="1.5"/></svg>Hinten</button>
-  <button type="button" data-view="seite"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><rect x="8" y="5" width="8" height="15" rx="2"/><path d="M11 9h2M11 13h2"/></svg>Seite</button>
-  <button type="button" data-view="unten"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="7" width="18" height="10" rx="2"/><circle cx="12" cy="12" r="1.5"/><path d="M15.5 10h3v4h-3"/></svg>Unten</button>
-</nav>
 <script>
 (function(){
   const root=document.documentElement,sun=document.getElementById('iconSun'),moon=document.getElementById('iconMoon'),meta=document.querySelector('meta[name="theme-color"]');
@@ -469,6 +475,11 @@ window.addEventListener("hashchange",route);route();
   window.addEventListener('storage',e=>{if(e.key==='overall-theme'&&(e.newValue==='dark'||e.newValue==='light'))apply(e.newValue,false)});
 })();
 </script>
-<script src="shared/ios-nav.js" data-bottom="84" defer></script>
+<script>
+// Installierbar und offline nutzbar (Service Worker wie bei Erste Hilfe)
+if('serviceWorker' in navigator&&(location.protocol==='https:'||location.hostname==='localhost'))
+  window.addEventListener('load',()=>navigator.serviceWorker.register('./sw.js').catch(()=>{}));
+</script>
+<script src="shared/ios-nav.js" data-bottom="14" defer></script>
 </body>
 </html>
