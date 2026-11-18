@@ -91,6 +91,7 @@ svg .tb{fill:var(--fg);font-family:var(--mono);font-size:11px}
 .acc:hover rect,.acc:focus-visible rect,.acc.on rect{fill:var(--cyan)}
 .acc:hover text,.acc:focus-visible text,.acc.on text{fill:var(--bg)}
 .hide-acc .acc{display:none}
+.hide-num .hs:not(.acc){display:none}
 .legend{display:flex;flex-wrap:wrap;gap:4px 14px;font-size:.75rem;color:var(--dim)}
 .legend i{font-style:normal;color:var(--amber)} .legend i.c{color:var(--cyan)}
 .detail{padding:14px;min-width:0;display:flex;flex-direction:column;gap:12px}
@@ -129,6 +130,8 @@ tr.row{cursor:pointer} tr.row:hover td{background:var(--hover)} tr.row.on td{bac
 .header-actions{display:flex;align-items:center;gap:8px}
 .acc-btn{display:inline-flex;align-items:center;gap:5px;height:34px;padding:0 12px;border-radius:999px;border:1px solid var(--cyan);background:transparent;color:var(--cyan);font-family:var(--ui);font-weight:700;font-size:.84rem;letter-spacing:-.01em;white-space:nowrap;transition:transform .15s}
 .acc-btn[aria-pressed="true"]{background:var(--cyan);color:var(--bg)}
+.acc-btn.num{border-color:var(--amber);color:var(--amber)}
+.acc-btn.num[aria-pressed="true"]{background:var(--amber);color:var(--bg)}
 .acc-btn:active,.theme-toggle:active{transform:scale(.94)}
 .theme-toggle{width:34px;height:34px;border-radius:50%;border:1px solid var(--border);background:var(--body);color:var(--fg);display:flex;align-items:center;justify-content:center;padding:0;flex:none}
 .theme-toggle svg{width:18px;height:18px}
@@ -139,7 +142,9 @@ tr.row{cursor:pointer} tr.row:hover td{background:var(--hover)} tr.row.on td{bac
 .tabbar button[aria-current="page"]::before{content:"";position:absolute;inset:5px 2px;z-index:-1;border-radius:16px;background:var(--amber-soft)}
 .tabbar button[aria-current="page"]{color:var(--amber);font-weight:600}
 .tabbar button[aria-current="page"] .ic{stroke-width:2.2}
-@media (max-width:380px){.brand h1{font-size:19px}.acc-btn{padding:0 10px}}
+.header-actions{gap:8px}
+.acc-btn .bi{width:19px;height:19px;flex:none}
+@media (max-width:440px){.acc-btn{width:34px;padding:0;justify-content:center}.acc-btn .lbl{display:none}}
 .intro summary{cursor:pointer;list-style:none}
 .intro summary::-webkit-details-marker{display:none}
 .intro .chev{margin-left:auto;transition:transform .15s}
@@ -161,7 +166,8 @@ tr.row{cursor:pointer} tr.row:hover td{background:var(--hover)} tr.row.on td{bac
     <div class="top-bar-row">
       <div class="brand"><img class="brand-logo" src="icon.svg" alt=""><h1>X100VI</h1></div>
       <div class="header-actions">
-        <button class="acc-btn" id="tog-acc" type="button" aria-pressed="true" title="Mein Zubehör ein-/ausblenden">◆ Zubehör</button>
+        <button class="acc-btn num" id="tog-num" type="button" aria-pressed="true" aria-label="Nummern ein-/ausblenden" title="Nummern-Markierungen ein-/ausblenden"><svg class="bi" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9.5" fill="none" stroke="currentColor" stroke-width="2"/><path d="M10.2 9.2 12.6 7.6V16.4" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg><span class="lbl">Nummern</span></button>
+        <button class="acc-btn" id="tog-acc" type="button" aria-pressed="true" aria-label="Zubehör ein-/ausblenden" title="Mein Zubehör ein-/ausblenden"><svg class="bi" viewBox="0 0 24 24" aria-hidden="true"><rect x="5.6" y="5.6" width="12.8" height="12.8" rx="1.5" transform="rotate(45 12 12)" fill="none" stroke="currentColor" stroke-width="2"/></svg><span class="lbl">Zubehör</span></button>
         <button id="themeToggle" class="theme-toggle" type="button" aria-label="Farbschema wechseln" title="Hell / Dunkel wechseln">
           <svg id="iconSun" style="display:none" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="5"/><path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/></svg>
           <svg id="iconMoon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
@@ -409,8 +415,8 @@ const A = {
 };
 const AK = {grip:"G",uv:"U",folie:"F",akku:"B",cuff:"C",leash:"L",tasche:"T"};
 
-let view="oben", sel=null, showAcc=true;
-try{ if(localStorage.getItem("x100vi-acc")==="0") showAcc=false }catch(e){}
+let view="oben", sel=null, showAcc=true, showNum=true;
+try{ if(localStorage.getItem("x100vi-acc")==="0") showAcc=false; if(localStorage.getItem("x100vi-num")==="0") showNum=false }catch(e){}
 function esc(s){return s.replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/"/g,"&quot;")}
 // Markierungen am Handy vergrößern: Kreisradius mindestens ~13 px auf dem Bildschirm
 function sizeMarks(){
@@ -426,13 +432,14 @@ function render(){
   const items=C.filter(c=>c.v===view);
   const hs=items.map((c,i)=>{const id=view+"-"+i;return `<g class="hs ${sel===id?"on":""}" tabindex="0" role="button" aria-label="${esc(c.n)}" data-id="${id}" transform="translate(${c.x} ${c.y})"><g class="mk"><circle cx="0" cy="0" r="34"/><text x="0" y="0">${i+1}</text></g></g>`}).join("");
   const ac=v.acc.map(([k,x,y])=>{const id="acc-"+k;return `<g class="hs acc ${sel===id?"on":""}" tabindex="0" role="button" aria-label="${esc(A[k].n)}" data-id="${id}" transform="translate(${x} ${y})"><g class="mk"><rect x="-28" y="-28" width="56" height="56" transform="rotate(45)"/><text x="0" y="0">${AK[k]}</text></g></g>`}).join("");
-  document.getElementById("svgs").innerHTML=`<svg class="cam ${showAcc?"":"hide-acc"}" viewBox="0 0 ${v.w||2000} ${v.h||1500}" role="img" aria-label="Foto X100VI ${view}"><image href="${v.img}" x="0" y="0" width="${v.w||2000}" height="${v.h||1500}"/>${hs}${ac}</svg>`;
+  document.getElementById("svgs").innerHTML=`<svg class="cam ${showAcc?"":"hide-acc"} ${showNum?"":"hide-num"}" viewBox="0 0 ${v.w||2000} ${v.h||1500}" role="img" aria-label="Foto X100VI ${view}"><image href="${v.img}" x="0" y="0" width="${v.w||2000}" height="${v.h||1500}"/>${hs}${ac}</svg>`;
   sizeMarks();
   document.getElementById("listhead").textContent=`$ ls ./${view}  (${items.length} Elemente${showAcc?", "+v.acc.length+" Zubehör":""})`;
   let rows=items.map((c,i)=>`<tr class="row ${sel===view+"-"+i?"on":""}" data-id="${view}-${i}" tabindex="0"><td class="n">${i+1}</td><td>${esc(c.n)}</td><td>${esc(c.d)}</td></tr>`).join("");
   if(showAcc) rows+=v.acc.map(([k])=>`<tr class="row ${sel==="acc-"+k?"on":""}" data-id="acc-${k}" tabindex="0"><td class="n c">${AK[k]}</td><td>${esc(A[k].n)}</td><td>${esc(A[k].w)}</td></tr>`).join("");
   document.getElementById("tbody").innerHTML=rows;
   document.getElementById("tog-acc").setAttribute("aria-pressed",showAcc);
+  document.getElementById("tog-num").setAttribute("aria-pressed",showNum);
   detail();
 }
 function detail(){
@@ -455,6 +462,7 @@ document.addEventListener("click",e=>{
   const tab=e.target.closest(".tabbar button"); if(tab){if(location.hash.slice(1)!==tab.dataset.view)location.hash=tab.dataset.view;window.scrollTo(0,0)}
 });
 document.addEventListener("keydown",e=>{if((e.key==="Enter"||e.key===" ")&&e.target.dataset&&e.target.dataset.id){e.preventDefault();pick(e.target.dataset.id)}});
+document.getElementById("tog-num").addEventListener("click",()=>{showNum=!showNum;try{localStorage.setItem("x100vi-num",showNum?"1":"0")}catch(e){} render()});
 document.getElementById("tog-acc").addEventListener("click",()=>{showAcc=!showAcc;try{localStorage.setItem("x100vi-acc",showAcc?"1":"0")}catch(e){} if(!showAcc&&sel&&sel.startsWith("acc-"))sel=null;render()});
 function route(){const h=location.hash.slice(1);view=V[h]?h:"oben";sel=null;render()}
 window.addEventListener("hashchange",route);route();
