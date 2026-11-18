@@ -142,6 +142,11 @@ tr.row{cursor:pointer} tr.row:hover td{background:var(--hover)} tr.row.on td{bac
 .tabbar button[aria-current="page"]{color:var(--amber);font-weight:600}
 .tabbar button[aria-current="page"] .ic{stroke-width:2.2}
 @media (max-width:380px){.brand h1{font-size:19px}.acc-btn{padding:0 10px}}
+.intro summary{cursor:pointer;list-style:none}
+.intro summary::-webkit-details-marker{display:none}
+.intro .chev{margin-left:auto;transition:transform .15s}
+.intro[open] .chev{transform:rotate(90deg)}
+.intro:not([open]) summary{border-bottom:0}
 </style>
 </head>
 <body>
@@ -160,13 +165,6 @@ tr.row{cursor:pointer} tr.row:hover td{background:var(--hover)} tr.row.on td{bac
   </div>
 </header>
 <div class="wrap">
-  <header class="term">
-    <div class="bar"><span class="dot r"></span><span class="dot a"></span><span class="dot c"></span><span class="path">~/x100vi/kamerakarte — zsh</span></div>
-    <div class="inner">
-      <h2 class="intro-h"><span class="p">$</span> x100vi --karte <span class="cursor" aria-hidden="true"></span></h2>
-      <p class="sub">Fujifilm X100VI (schwarz), FUJINON 23 mm F2 (KB-äquivalent 35 mm). Elemente anklicken für Funktion, Werkseinstellung, Anpassung und Praxistipp. Fotos: eigene Aufnahmen. Bezeichnungen und Standardbelegungen stammen aus dem <a href="https://fujifilm-dsc.com/en/manual/x100vi/about_this_camera/parts/" target="_blank" rel="noopener">offiziellen Handbuch (Parts of the Camera)</a>.</p>
-    </div>
-  </header>
 
   <section class="term" id="app">
     <div class="main">
@@ -180,6 +178,14 @@ tr.row{cursor:pointer} tr.row:hover td{background:var(--hover)} tr.row.on td{bac
     <div class="sec-h" id="listhead"></div>
     <div class="list"><div class="tbl-wrap"><table><thead><tr><th>#</th><th>Element</th><th>Standard</th></tr></thead><tbody id="tbody"></tbody></table></div></div>
   </section>
+
+  <details class="term intro">
+    <summary class="bar"><span class="dot r"></span><span class="dot a"></span><span class="dot c"></span><span class="path">Über diese Karte</span><span class="chev" aria-hidden="true">▸</span></summary>
+    <div class="inner">
+      <h2 class="intro-h"><span class="p">$</span> x100vi --karte <span class="cursor" aria-hidden="true"></span></h2>
+      <p class="sub">Fujifilm X100VI (schwarz), FUJINON 23 mm F2 (KB-äquivalent 35 mm). Elemente anklicken für Funktion, Werkseinstellung, Anpassung und Praxistipp. Fotos: eigene Aufnahmen. Bezeichnungen und Standardbelegungen stammen aus dem <a href="https://fujifilm-dsc.com/en/manual/x100vi/about_this_camera/parts/" target="_blank" rel="noopener">offiziellen Handbuch (Parts of the Camera)</a>.</p>
+    </div>
+  </details>
 
   <section class="term">
     <div class="bar"><span class="dot"></span><span class="dot"></span><span class="dot"></span><span class="path">cat quellen.txt</span></div>
